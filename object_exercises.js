@@ -128,7 +128,7 @@ let subjects = {
     });
   },
   removeTeacher: function (teacher, subject) {
-    teacher.subjects.pop();
+    
   }
 };
 
@@ -253,3 +253,4 @@ function displayAllTeachers() {
 
 initialiseSchool();
 displayAllStudents();
+displayAllTeachers();
