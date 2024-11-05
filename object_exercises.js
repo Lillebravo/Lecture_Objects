@@ -70,9 +70,7 @@ let studentsAtBerga = {
     student.subjects.push(subject);
     subject.students.push(student);
   },
-  quitSubject: function (student, subject) {
-    
-  }
+  quitSubject: function (student, subject) {},
 };
 
 let teachersAtBerga = {
@@ -172,38 +170,70 @@ function initialiseSchool() {
 }
 
 function displayAllStudents() {
-    for (let studentKey in studentsAtBerga) {
-        if (typeof studentsAtBerga[studentKey] === "object") {
-            const student = studentsAtBerga[studentKey];
-            console.log(`Student: ${student.name}`);
-            console.log(`Age: ${student.age}`);
-            console.log(`Gender: ${student.gender}`);
-            console.log(`Subjects: ${student.subjects.map(subject => subject.name).join(", ")}`);
-            console.log("------------------------"); // Separator for readability
-        }
+  let nrOfStudents = 0;
+  for (let studentKey in studentsAtBerga) {
+    if (typeof studentsAtBerga[studentKey] === "object") {
+      const student = studentsAtBerga[studentKey];
+      console.log(`Student: ${student.name}`);
+      console.log(`Age: ${student.age}`);
+      console.log(`Gender: ${student.gender}`);
+      console.log(
+        `Subjects: ${student.subjects
+          .map((subject) => subject.name)
+          .join(", ")}`
+      );
+      console.log("------------------------");
+      nrOfStudents++;
     }
+  }
+  return "The number of students enlisted are: " + nrOfStudents;
 }
 
-//Skapa nu fler funktioner, displayAllSubjectsOfStudent(student), displayAllStudentsEnlistedToSubject(subject),
-// displayAllTeachers. Varje funktion bör ha något returvärde.
-
 function displayAllSubjectsOfStudent(student) {
-
+  console.log(
+    `Subjects: ${student.subjects.map((subject) => subject.name).join(", ")}`
+  );
+  const nrOfSubjects = student.subjects.length;
+  if (nrOfSubjects > 1) {
+    return student.name + " studies: " + nrOfSubjects + " subjects.";
+  } else if (nrOfSubjects == 1) {
+    return student.name + " studies: 1 subject";
+  } else {
+    return student.name + " doesn´t have any subjects at the moment.";
+  }
 }
 
 function displayAllStudentsEnlistedToSubject(subject) {
+  let nrOfStudents = 0;
 
-}   
+  if (subject && subject.name) {
+    subject.students.forEach((student) => {
+      console.log(`Student: ${student.name}`);
+      console.log("------------------------");
+      nrOfStudents++;
+    });
+    return `Number of students studying ${subject.name}: ${nrOfStudents}`;
+  } else {
+    return "Invalid subject provided.";
+  }
+}
 
 function displayAllTeachers() {
-    for (let teacherKey in teachersAtBerga) {
-        if (typeof teachersAtBerga[teacherKey] === "object") {
-            const teacher = teachersAtBerga[teacherKey];
-            console.log(`Teacher: ${teacher.name}`);
-            console.log(`Teaches in subjects: ${teacher.subjects.map(subject => subject.name).join(", ")}`);
-            console.log("------------------------"); // Separator for readability
-        }
+  let nrOfTeachers = 0;
+  for (let teacherKey in teachersAtBerga) {
+    if (typeof teachersAtBerga[teacherKey] === "object") {
+      const teacher = teachersAtBerga[teacherKey];
+      console.log(`Teacher: ${teacher.name}`);
+      console.log(
+        `Teaches in subjects: ${teacher.subjects
+          .map((subject) => subject.name)
+          .join(", ")}`
+      );
+      console.log("------------------------");
+      nrOfTeachers++;
     }
+  }
+  return nrOfTeachers;
 }
 
 // Bygg ut med ett ytterligare typ av objekt, lägg till objekt som handlar om betyg. Vilka egenskaper ska dessa ha?
@@ -211,3 +241,4 @@ function displayAllTeachers() {
 // finnas i de andra typerna av objekt som behandlar betyg? Försöka lösa detta och inspektera och lek runt med det i konsolen.
 
 initialiseSchool();
+displayAllStudents();
