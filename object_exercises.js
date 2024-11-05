@@ -31,6 +31,12 @@ let bergaSkolan = {
     });
     teachersAtBerga[name] = newTeacher;
   },
+  relegateStudent: function(name) {
+
+  },
+  fireTeacher: function(name) {
+
+  }
 };
 
 // lägg till quitSubject, removeTeacher, relegateStudent, fireTeacher
@@ -70,7 +76,9 @@ let studentsAtBerga = {
     student.subjects.push(subject);
     subject.students.push(student);
   },
-  quitSubject: function (student, subject) {},
+  quitSubject: function (student, subject) {
+
+  }
 };
 
 let teachersAtBerga = {
@@ -85,7 +93,7 @@ let teachersAtBerga = {
   enlistToSubject: function (teacher, subject) {
     teacher.subjects.push(subject);
     subject.teachers.push(teacher);
-  },
+  }
 };
 
 let subjects = {
@@ -119,6 +127,9 @@ let subjects = {
       teacher.subjects.push(newSubject);
     });
   },
+  removeTeacher: function (teacher, subject) {
+    teacher.subjects.pop();
+  }
 };
 
 // 5. Skriv en kodrad där du lägger till ett ämne i en lärares ämnesArray.
