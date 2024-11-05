@@ -31,12 +31,16 @@ let bergaSkolan = {
     });
     teachersAtBerga[name] = newTeacher;
   },
-  relegateStudent: function(name) {
-
+  relegateStudent: function (name) {},
+  fireTeacher: function (name) {
+    for (let teacherKey in teachersAtBerga) {
+      if (teachersAtBerga[teacherKey].name === name) {
+        delete teachersAtBerga[teacherKey];
+        this.teachers.splice(teacherKey, 1);
+        return name + " was fired.";
+      }
+    }
   },
-  fireTeacher: function(name) {
-
-  }
 };
 
 // lägg till quitSubject, removeTeacher, relegateStudent, fireTeacher
@@ -76,9 +80,7 @@ let studentsAtBerga = {
     student.subjects.push(subject);
     subject.students.push(student);
   },
-  quitSubject: function (student, subject) {
-
-  }
+  quitSubject: function (student, subject) {},
 };
 
 let teachersAtBerga = {
@@ -93,7 +95,7 @@ let teachersAtBerga = {
   enlistToSubject: function (teacher, subject) {
     teacher.subjects.push(subject);
     subject.teachers.push(teacher);
-  }
+  },
 };
 
 let subjects = {
@@ -128,7 +130,11 @@ let subjects = {
     });
   },
   removeTeacher: function (teacher, subject) {
-    
+    for (let subjectKey in subjects) {
+      if (subject.teachers[subjectKey] === teacher.name) {
+        this.teachers.splice(subjectKey, 1); // doesn´t work atm
+      }
+    }
   }
 };
 
