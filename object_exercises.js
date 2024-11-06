@@ -165,8 +165,6 @@ let teachersAtBerga = {
   }
 };
 
-/* in the studentsOfBerga, cant we just use subjects.getStudentGrade in our getGrades method? Should make it easier to maintain  */
-
 let Grade = {
   A: 20, 
   B: 17.5, 
