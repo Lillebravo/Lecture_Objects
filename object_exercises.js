@@ -31,8 +31,16 @@ let bergaSkolan = {
     });
     teachersAtBerga[name] = newTeacher;
   },
-  relegateStudent: function (name) {},
+  relegateStudent: function (name) {
+    
+  },
   fireTeacher: function (name) {
+    for (let subjectKey in subjects) {
+      if (typeof subjects[subjectKey] === "object") {
+        const subject = subjects[subjectKey];
+        subjects.removeTeacher(name, subject);
+      }
+    }
     for (let teacherKey in teachersAtBerga) {
       if (teachersAtBerga[teacherKey].name === name) {
         delete teachersAtBerga[teacherKey];
@@ -80,7 +88,7 @@ let studentsAtBerga = {
     student.subjects.push(subject);
     subject.students.push(student);
   },
-  quitSubject: function (student, subject) {},
+  quitSubject: function (student, subject) {}
 };
 
 let teachersAtBerga = {
@@ -95,7 +103,7 @@ let teachersAtBerga = {
   enlistToSubject: function (teacher, subject) {
     teacher.subjects.push(subject);
     subject.teachers.push(teacher);
-  },
+  }
 };
 
 let subjects = {
@@ -129,10 +137,10 @@ let subjects = {
       teacher.subjects.push(newSubject);
     });
   },
-  removeTeacher: function (teacher, subject) {
+  removeTeacher: function (name, subject) {
     for (let i = 0; i < subject.teachers.length; i++) {
-      if (subject.teachers[i].name === teacher.name) {
-        subject.teachers.splice(i, 1); 
+      if (subject.teachers[i].name === name) {
+        subject.teachers.splice(i, 1);
       }
     }
   },
