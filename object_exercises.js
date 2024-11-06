@@ -94,9 +94,42 @@ let studentsAtBerga = {
     gender: "Kvinna",
     subjects: [],
   },
+
   addSubject: function (student, subject) {
     student.subjects.push(subject);
     subject.students.push(student);
+  },
+
+  getGrades: function (student) {
+    let allGrades = {};
+
+    student.subjects.forEach(subject => {
+      if (subject.grades[student.name]) {
+        allGrades[subject.name] = {
+          ...subject.grades[student.name],
+          points: subject.points
+        };
+      }
+    });
+    return allGrades;
+  },
+
+  getGPA: function (student) {
+    let grades = this.getGrades(student);
+    let totalGradeWorth = 0;
+    let totalCoursePoints = 0;
+
+    Object.entries(grades).forEach(([subjectName, gradeInfo]) => {
+      const gradeValue = Grade[gradeInfo.grade];
+      const coursePoints = gradeInfo.points;
+
+      totalGradeWorth += gradeValue * coursePoints;
+      totalCoursePoints += coursePoints;
+    });
+
+    if (totalCoursePoints === 0) return null;
+
+    return (totalGradeWorth / totalCoursePoints).toFixed(2);
   }
 };
 
@@ -139,8 +172,7 @@ let teachersAtBerga = {
     }
 
     return `Grade ${grade} assigned to ${student.name} in ${subject.name}`;
-  },
-
+  }
 };
 
 /* We want to implement grades as an object. 
