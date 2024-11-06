@@ -130,12 +130,12 @@ let subjects = {
     });
   },
   removeTeacher: function (teacher, subject) {
-    for (let subjectKey in subjects) {
-      if (subject.teachers[subjectKey] === teacher.name) {
-        this.teachers.splice(subjectKey, 1); // doesn´t work atm
+    for (let i = 0; i < subject.teachers.length; i++) {
+      if (subject.teachers[i].name === teacher.name) {
+        subject.teachers.splice(i, 1); 
       }
     }
-  }
+  },
 };
 
 // 5. Skriv en kodrad där du lägger till ett ämne i en lärares ämnesArray.
