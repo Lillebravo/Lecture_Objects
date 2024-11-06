@@ -108,13 +108,15 @@ let studentsAtBerga = {
     let allGrades = {};
 
     student.subjects.forEach(subject => {
-      if (subject.grades[student.name]) {
+      const gradeInfo = subjects.getstudentGrade(subject, student.name);
+      if (gradeInfo) {
         allGrades[subject.name] = {
-          ...subject.grades[student.name],
+          ...gradeInfo,
           points: subject.points
         };
       }
     });
+    
     return allGrades;
   }
 };
