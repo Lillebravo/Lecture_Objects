@@ -5,6 +5,7 @@ let bergaSkolan = {
   city: "Lund",
   students: [],
   teachers: [],
+
   addStudent: function (name, age, gender, subjects) {
     let newStudent = {
       name: name,
@@ -19,6 +20,7 @@ let bergaSkolan = {
     });
     studentsAtBerga[name] = newStudent;
   },
+
   addTeacher: function (name, subjects) {
     let newTeacher = {
       name: name,
@@ -31,6 +33,7 @@ let bergaSkolan = {
     });
     teachersAtBerga[name] = newTeacher;
   },
+
   relegateStudent: function (name) {
     for (let subjectKey in subjects) {
       if (typeof subjects[subjectKey] === "object") {
@@ -46,6 +49,7 @@ let bergaSkolan = {
       }
     }
   },
+
   fireTeacher: function (name) {
     for (let subjectKey in subjects) {
       if (typeof subjects[subjectKey] === "object") {
@@ -112,24 +116,6 @@ let studentsAtBerga = {
       }
     });
     return allGrades;
-  },
-
-  getGPA: function (student) {
-    let grades = this.getGrades(student);
-    let totalGradeWorth = 0;
-    let totalCoursePoints = 0;
-
-    Object.entries(grades).forEach(([subjectName, gradeInfo]) => {
-      const gradeValue = Grade[gradeInfo.grade];
-      const coursePoints = gradeInfo.points;
-
-      totalGradeWorth += gradeValue * coursePoints;
-      totalCoursePoints += coursePoints;
-    });
-
-    if (totalCoursePoints === 0) return null;
-
-    return (totalGradeWorth / totalCoursePoints).toFixed(2);
   }
 };
 
@@ -163,23 +149,21 @@ let teachersAtBerga = {
     const gradeData = {
       grade: grade,
       date: new Date().toISOString(),
-      teacherID: teacher.name
+      teacherId: teacher.name  
     };
 
     if (existingGrade) {
       gradeData.previousGrade = existingGrade.grade;
+      subject.grades[student.name] = gradeData;
       return `Grade was updated from ${existingGrade.grade} to ${grade} for ${student.name} in ${subject.name}`;
     }
 
+    subject.grades[student.name] = gradeData;
     return `Grade ${grade} assigned to ${student.name} in ${subject.name}`;
   }
 };
 
-/* We want to implement grades as an object. 
-They should contain a nameOfSubject and a value -> E, D, C, B, A
-Every subject has an array of students and teachers that take part in that subject.
-So it makes sense to add an object Grade above subjects and then place a grade object inside each subject.
-We should also add a method in teachersAtBerga "gradeStudent()"  */
+/* in the studentsOfBerga, cant we just use subjects.getStudentGrade in our getGrades method? Should make it easier to maintain  */
 
 let Grade = {
   A: 20, 
@@ -191,22 +175,22 @@ let Grade = {
 };
 
 let subjects = {
-  mattematik: {
-    name: "Mattematik 1c",
+  Mattematik_1c: {
+    name: "Mattematik_1c",
     students: [],
     teachers: [],
     grades: {},
     points: 100
   },
-  engelska: {
-    name: "Engelska 5",
+  Engelska_5: {
+    name: "Engelska_5",
     students: [],
     teachers: [],
     grades: {},
     points: 100
   },
-  svenska: {
-    name: "Svenska 1",
+  Svenska_1: {
+    name: "Svenska_1",
     students: [],
     teachers: [],
     grades: {},
@@ -253,14 +237,14 @@ let subjects = {
     return Grade.hasOwnProperty(grade);
   },
 
-  getstudentGrade: function(subject, studentName) {
-    if (this[subject] && this[subject].grades[studentName]) {
+  getstudentGrade: function (subject, studentName) {
+    if (typeof subject === 'object' && subject !== null) {
+      return subject.grades[studentName] || null;
+    } else if (this[subject] && this[subject].grades[studentName]) {
       return this[subject].grades[studentName];
     }
     return null;
-  },
-
-
+  }
 };
 
 // 5. Skriv en kodrad där du lägger till ett ämne i en lärares ämnesArray.
@@ -294,10 +278,10 @@ function initialiseSchool() {
       bergaSkolan.students.push(student.name);
 
       if (student.age % 2 === 0) {
-        studentsAtBerga.addSubject(student, subjects.engelska);
-        studentsAtBerga.addSubject(student, subjects.svenska);
+        studentsAtBerga.addSubject(student, subjects.Engelska_5);
+        studentsAtBerga.addSubject(student, subjects.Svenska_1);
       } else {
-        studentsAtBerga.addSubject(student, subjects.mattematik);
+        studentsAtBerga.addSubject(student, subjects.Mattematik_1c);
       }
     }
   }
@@ -306,9 +290,9 @@ function initialiseSchool() {
       bergaSkolan.teachers.push(teachersAtBerga[teacherKey].name);
     }
   }
-  teachersAtBerga.enlistToSubject(teachersAtBerga.Nicklas, subjects.engelska);
-  teachersAtBerga.enlistToSubject(teachersAtBerga.Nicklas, subjects.svenska);
-  teachersAtBerga.enlistToSubject(teachersAtBerga.Daniel, subjects.mattematik);
+  teachersAtBerga.enlistToSubject(teachersAtBerga.Nicklas, subjects.Engelska_5);
+  teachersAtBerga.enlistToSubject(teachersAtBerga.Nicklas, subjects.Svenska_1);
+  teachersAtBerga.enlistToSubject(teachersAtBerga.Daniel, subjects.Mattematik_1c);
 }
 
 function displayAllStudents() {
@@ -332,32 +316,120 @@ function displayAllStudents() {
 }
 
 function displayAllSubjectsOfStudent(student) {
-  console.log(
-    `Subjects: ${student.subjects.map((subject) => subject.name).join(", ")}`
-  );
-  const nrOfSubjects = student.subjects.length;
-  if (nrOfSubjects > 1) {
-    return student.name + " studies: " + nrOfSubjects + " subjects.";
-  } else if (nrOfSubjects == 1) {
-    return student.name + " studies: 1 subject";
-  } else {
-    return student.name + " doesn´t have any subjects at the moment.";
-  }
+  let totalGradesWorth = 0;
+  let totalCoursePoints = 0;
+  let subjectsInfo = [];
+
+  student.subjects.forEach(subject => {
+    const gradeInfo = subject.grades[student.name];
+    const coursePoints = subject.points;
+    
+    let subjectInfo = {
+      name: subject.name,
+      points: coursePoints,
+      grade: gradeInfo ? gradeInfo.grade : 'Not graded',
+      teacher: subject.teachers.map(teacher => teacher.name).join(', ')
+    };
+
+    if (gradeInfo) {
+      subjectInfo.gradedBy = gradeInfo.teacherId;
+      subjectInfo.gradedOn = new Date(gradeInfo.date).toLocaleDateString();
+      subjectInfo.weightedPoints = Grade[gradeInfo.grade] * coursePoints;
+      
+      totalGradesWorth += subjectInfo.weightedPoints;
+      totalCoursePoints += coursePoints;
+    }
+
+    subjectsInfo.push(subjectInfo);
+    console.log(`Subject: ${subjectInfo.name}`);
+    console.log(`Course Points: ${subjectInfo.points}`);
+    console.log(`Grade: ${subjectInfo.grade}`);
+    console.log(`Teacher: ${subjectInfo.teacher}`);
+    if (gradeInfo) {
+      console.log(`Graded by: ${subjectInfo.gradedBy}`);
+      console.log(`Graded on: ${subjectInfo.gradedOn}`);
+      console.log(`Weighted Points: ${subjectInfo.weightedPoints}`);
+    }
+    console.log("------------------------");
+  });
+
+  const weightedGPA = totalCoursePoints > 0 ? 
+    (totalGradesWorth / totalCoursePoints).toFixed(2) : 
+    'No grades yet';
+
+  console.log(`Total Course Points: ${totalCoursePoints}`);
+  console.log(`Weighted GPA: ${weightedGPA}`);
+
+  return {
+    studentName: student.name,
+    numberOfSubjects: student.subjects.length,
+    subjects: subjectsInfo,
+    totalCoursePoints,
+    weightedGPA
+  };
 }
 
 function displayAllStudentsEnlistedToSubject(subject) {
-  let nrOfStudents = 0;
-
-  if (subject && subject.name) {
-    subject.students.forEach((student) => {
-      console.log(`Student: ${student.name}`);
-      console.log("------------------------");
-      nrOfStudents++;
-    });
-    return `Number of students studying ${subject.name}: ${nrOfStudents}`;
-  } else {
+  if (!subject || !subject.name) {
     return "Invalid subject provided.";
   }
+
+  console.log(`Subject: ${subject.name}`);
+  console.log(`Course Points: ${subject.points}`);
+  console.log(`Teachers: ${subject.teachers.map(teacher => teacher.name).join(', ')}`);
+  console.log("------------------------");
+  console.log("Students:");
+
+  let studentsInfo = [];
+  let gradeDistribution = {
+    A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, 'Not graded': 0
+  };
+
+  subject.students.forEach(student => {
+    const gradeInfo = subject.grades[student.name];
+    const grade = gradeInfo ? gradeInfo.grade : 'Not graded';
+    gradeDistribution[grade]++;
+
+    let studentInfo = {
+      name: student.name,
+      grade: grade
+    };
+
+    if (gradeInfo) {
+      studentInfo.gradedBy = gradeInfo.teacherId;
+      studentInfo.gradedOn = new Date(gradeInfo.date).toLocaleDateString();
+      studentInfo.previousGrade = gradeInfo.previousGrade;
+    }
+
+    studentsInfo.push(studentInfo);
+    
+    console.log(`Student: ${studentInfo.name}`);
+    console.log(`Grade: ${studentInfo.grade}`);
+    if (gradeInfo) {
+      console.log(`Graded by: ${studentInfo.gradedBy}`);
+      console.log(`Graded on: ${studentInfo.gradedOn}`);
+      if (studentInfo.previousGrade) {
+        console.log(`Previous grade: ${studentInfo.previousGrade}`);
+      }
+    }
+    console.log("------------------------");
+  });
+
+  console.log("Grade Distribution:");
+  Object.entries(gradeDistribution)
+    .filter(([_, count]) => count > 0)
+    .forEach(([grade, count]) => {
+      console.log(`${grade}: ${count} students`);
+    });
+
+  return {
+    subjectName: subject.name,
+    points: subject.points,
+    teachers: subject.teachers.map(teacher => teacher.name),
+    numberOfStudents: subject.students.length,
+    students: studentsInfo,
+    gradeDistribution
+  };
 }
 
 function displayAllTeachers() {
@@ -378,10 +450,9 @@ function displayAllTeachers() {
   return nrOfTeachers;
 }
 
-// Bygg ut med ett ytterligare typ av objekt, lägg till objekt som handlar om betyg. Vilka egenskaper ska dessa ha?
-// Vilka metoder kan behövas i dessa betygsobjekt? Hur ska relationen mellan de andra objekten vara? Vilka metoder bör
-// finnas i de andra typerna av objekt som behandlar betyg? Försöka lösa detta och inspektera och lek runt med det i konsolen.
-
 initialiseSchool();
 displayAllStudents();
 displayAllTeachers();
+
+teachersAtBerga.gradeStudent(teachersAtBerga.Daniel, studentsAtBerga.Johan, subjects.Mattematik_1c, 'A');
+console.log(subjects.getstudentGrade(subjects.Mattematik_1c, "Johan"));
