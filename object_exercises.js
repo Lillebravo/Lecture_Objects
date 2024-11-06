@@ -32,13 +32,25 @@ let bergaSkolan = {
     teachersAtBerga[name] = newTeacher;
   },
   relegateStudent: function (name) {
-    
+    for (let subjectKey in subjects) {
+      if (typeof subjects[subjectKey] === "object") {
+        const subject = subjects[subjectKey];
+        subjects.removePersonFromSubject(false, name, subject);
+      }
+    }
+    for (let studentKey in studentsAtBerga) {
+      if (studentsAtBerga[studentKey].name === name) {
+        delete studentsAtBerga[studentKey];
+        this.students.splice(studentKey, 1);
+        return name + " was relegated.";
+      }
+    }
   },
   fireTeacher: function (name) {
     for (let subjectKey in subjects) {
       if (typeof subjects[subjectKey] === "object") {
         const subject = subjects[subjectKey];
-        subjects.removeTeacher(name, subject);
+        subjects.removePersonFromSubject(true, name, subject);
       }
     }
     for (let teacherKey in teachersAtBerga) {
@@ -50,8 +62,6 @@ let bergaSkolan = {
     }
   },
 };
-
-// lägg till quitSubject, removeTeacher, relegateStudent, fireTeacher
 
 let studentsAtBerga = {
   Johan: {
@@ -87,8 +97,7 @@ let studentsAtBerga = {
   addSubject: function (student, subject) {
     student.subjects.push(subject);
     subject.students.push(student);
-  },
-  quitSubject: function (student, subject) {}
+  }
 };
 
 let teachersAtBerga = {
@@ -137,13 +146,23 @@ let subjects = {
       teacher.subjects.push(newSubject);
     });
   },
-  removeTeacher: function (name, subject) {
-    for (let i = 0; i < subject.teachers.length; i++) {
-      if (subject.teachers[i].name === name) {
-        subject.teachers.splice(i, 1);
+  removePersonFromSubject: function (isTeacher = true, name, subject) {
+    // was thinking of just iterating both teachers/students and remove anyone with matching name
+    //in that case there would be no need for a boolean but then there would be problems if a student and teacher have the same name
+    if (isTeacher) { 
+      for (let i = 0; i < subject.teachers.length; i++) {
+        if (subject.teachers[i].name === name) {
+          subject.teachers.splice(i, 1);
+        }
+      } 
+    } else {
+      for (let i = 0; i < subject.students.length; i++) {
+        if (subject.students[i].name === name) {
+          subject.students.splice(i, 1);
+        }
       }
     }
-  },
+  }
 };
 
 // 5. Skriv en kodrad där du lägger till ett ämne i en lärares ämnesArray.
