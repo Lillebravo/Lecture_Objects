@@ -109,33 +109,85 @@ let teachersAtBerga = {
     name: "Daniel",
     subjects: [],
   },
+
   enlistToSubject: function (teacher, subject) {
     teacher.subjects.push(subject);
     subject.teachers.push(teacher);
-  }
+  },
+
+  gradeStudent: function (teacher, student, subject, grade) {
+    if (!teacher.subjects.includes(subject)) {
+      return `${teacher.name} is not authorized to grade ${subject.name}`;
+    } 
+    if (!student.subjects.includes(subject)) {
+      return `${student.name} is not enrolled in ${subject.name}`;
+    }
+    if (!subjects.isValidGrade(grade)) {
+      return `Invalid grade: ${grade}`;
+    }
+
+    const existingGrade = subject.grades[student.name];
+    const gradeData = {
+      grade: grade,
+      date: new Date().toISOString(),
+      teacherID: teacher.name
+    };
+
+    if (existingGrade) {
+      gradeData.previousGrade = existingGrade.grade;
+      return `Grade was updated from ${existingGrade.grade} to ${grade} for ${student.name} in ${subject.name}`;
+    }
+
+    return `Grade ${grade} assigned to ${student.name} in ${subject.name}`;
+  },
+
+};
+
+/* We want to implement grades as an object. 
+They should contain a nameOfSubject and a value -> E, D, C, B, A
+Every subject has an array of students and teachers that take part in that subject.
+So it makes sense to add an object Grade above subjects and then place a grade object inside each subject.
+We should also add a method in teachersAtBerga "gradeStudent()"  */
+
+let Grade = {
+  A: 20, 
+  B: 17.5, 
+  C: 15,
+  D: 12.5,
+  E: 10,
+  F: 0
 };
 
 let subjects = {
   mattematik: {
-    name: "Mattematik",
+    name: "Mattematik 1c",
     students: [],
     teachers: [],
+    grades: {},
+    points: 100
   },
   engelska: {
-    name: "Engelska",
+    name: "Engelska 5",
     students: [],
     teachers: [],
+    grades: {},
+    points: 100
   },
   svenska: {
-    name: "Svenska",
+    name: "Svenska 1",
     students: [],
     teachers: [],
+    grades: {},
+    points: 100
   },
-  addSubject: function (name, students, teachers) {
+
+  addSubject: function (name, students, teachers, coursePoints) {
     let newSubject = {
       name: name,
       students: students || [],
       teachers: teachers || [],
+      grades: {},
+      points: coursePoints
     };
 
     subjects[name] = newSubject;
@@ -146,6 +198,7 @@ let subjects = {
       teacher.subjects.push(newSubject);
     });
   },
+
   removePersonFromSubject: function (isTeacher = true, name, subject) {
     // was thinking of just iterating both teachers/students and remove anyone with matching name
     //in that case there would be no need for a boolean but then there would be problems if a student and teacher have the same name
@@ -162,7 +215,20 @@ let subjects = {
         }
       }
     }
-  }
+  },
+
+  isValidGrade: function (grade) {
+    return Grade.hasOwnProperty(grade);
+  },
+
+  getstudentGrade: function(subject, studentName) {
+    if (this[subject] && this[subject].grades[studentName]) {
+      return this[subject].grades[studentName];
+    }
+    return null;
+  },
+
+
 };
 
 // 5. Skriv en kodrad där du lägger till ett ämne i en lärares ämnesArray.
