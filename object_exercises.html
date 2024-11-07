@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>School system</title>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Skolsystem" />
@@ -11,14 +13,25 @@
     />
 
     <link rel="icon" type="image/x-icon" href="x_icon.png" />
-    <link rel="stylesheet" href="object_exercises.cs" />
-
-    <title>School system</title>
+    <link rel="stylesheet" href="object_exercises.css" />
 </head>
 <body>
 
-    <div class="container">
-        <h1>System för skolor</h1>
+    <div class="createSchoolMenu">
+        <h1>System for schools</h1>
+        <form>
+            <input type="text" placeholder="Name of your school">
+            <button type="submit">Create school</button>
+        </form>
+    </div>
+    <div class="schoolSystem">
+        <h1 id="schoolName">Name on school</h1>
+        <h2>Teachers:</h2>
+        <p id="nrOfTeachers">amount of teachers</p>
+        <p id="teacherNames">teachers</p>
+        <h2>Students:</h2>
+        <p id="nrOfStudents">amount of students</p>
+        <p id="studentNames">students</p>
     </div>
     <script src="object_exercises.js"></script>
 </body>

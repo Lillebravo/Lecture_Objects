@@ -1,3 +1,9 @@
+let schoolNameDiv = document.getElementById("schoolName");
+let teachersDiv = document.getElementById("teacherNames");
+let nrOfTeachersDiv = document.getElementById("nrOfTeachers");
+let studentsDiv = document.getElementById("studentNames");
+let nrOfStudentsDiv = document.getElementById("nrOfStudents");
+
 let bergaSkolan = {
   name: "Bergaskolan",
   adress: "Bergagatan 33",
@@ -107,18 +113,18 @@ let studentsAtBerga = {
   getGrades: function (student) {
     let allGrades = {};
 
-    student.subjects.forEach(subject => {
+    student.subjects.forEach((subject) => {
       const gradeInfo = subjects.getstudentGrade(subject, student.name);
       if (gradeInfo) {
         allGrades[subject.name] = {
           ...gradeInfo,
-          points: subject.points
+          points: subject.points,
         };
       }
     });
-    
+
     return allGrades;
-  }
+  },
 };
 
 let teachersAtBerga = {
@@ -139,7 +145,7 @@ let teachersAtBerga = {
   gradeStudent: function (teacher, student, subject, grade) {
     if (!teacher.subjects.includes(subject)) {
       return `${teacher.name} is not authorized to grade ${subject.name}`;
-    } 
+    }
     if (!student.subjects.includes(subject)) {
       return `${student.name} is not enrolled in ${subject.name}`;
     }
@@ -151,7 +157,7 @@ let teachersAtBerga = {
     const gradeData = {
       grade: grade,
       date: new Date().toISOString(),
-      teacherId: teacher.name  
+      teacherId: teacher.name,
     };
 
     if (existingGrade) {
@@ -162,16 +168,16 @@ let teachersAtBerga = {
 
     subject.grades[student.name] = gradeData;
     return `Grade ${grade} assigned to ${student.name} in ${subject.name}`;
-  }
+  },
 };
 
 let Grade = {
-  A: 20, 
-  B: 17.5, 
+  A: 20,
+  B: 17.5,
   C: 15,
   D: 12.5,
   E: 10,
-  F: 0
+  F: 0,
 };
 
 let subjects = {
@@ -180,21 +186,21 @@ let subjects = {
     students: [],
     teachers: [],
     grades: {},
-    points: 100
+    points: 100,
   },
   Engelska_5: {
     name: "Engelska_5",
     students: [],
     teachers: [],
     grades: {},
-    points: 100
+    points: 100,
   },
   Svenska_1: {
     name: "Svenska_1",
     students: [],
     teachers: [],
     grades: {},
-    points: 100
+    points: 100,
   },
 
   addSubject: function (name, students, teachers, coursePoints) {
@@ -203,7 +209,7 @@ let subjects = {
       students: students || [],
       teachers: teachers || [],
       grades: {},
-      points: coursePoints
+      points: coursePoints,
     };
 
     subjects[name] = newSubject;
@@ -218,12 +224,12 @@ let subjects = {
   removePersonFromSubject: function (isTeacher = true, name, subject) {
     // was thinking of just iterating both teachers/students and remove anyone with matching name
     //in that case there would be no need for a boolean but then there would be problems if a student and teacher have the same name
-    if (isTeacher) { 
+    if (isTeacher) {
       for (let i = 0; i < subject.teachers.length; i++) {
         if (subject.teachers[i].name === name) {
           subject.teachers.splice(i, 1);
         }
-      } 
+      }
     } else {
       for (let i = 0; i < subject.students.length; i++) {
         if (subject.students[i].name === name) {
@@ -238,13 +244,13 @@ let subjects = {
   },
 
   getstudentGrade: function (subject, studentName) {
-    if (typeof subject === 'object' && subject !== null) {
+    if (typeof subject === "object" && subject !== null) {
       return subject.grades[studentName] || null;
     } else if (this[subject] && this[subject].grades[studentName]) {
       return this[subject].grades[studentName];
     }
     return null;
-  }
+  },
 };
 
 // 5. Skriv en kodrad där du lägger till ett ämne i en lärares ämnesArray.
@@ -292,26 +298,52 @@ function initialiseSchool() {
   }
   teachersAtBerga.enlistToSubject(teachersAtBerga.Nicklas, subjects.Engelska_5);
   teachersAtBerga.enlistToSubject(teachersAtBerga.Nicklas, subjects.Svenska_1);
-  teachersAtBerga.enlistToSubject(teachersAtBerga.Daniel, subjects.Mattematik_1c);
+  teachersAtBerga.enlistToSubject(
+    teachersAtBerga.Daniel,
+    subjects.Mattematik_1c
+  );
 }
 
 function displayAllStudents() {
+  let studentNames = [];
+  let studentSubjects = [];
   let nrOfStudents = 0;
+  let studentHtml = "";
+  let studentSubjectsMap = [];
+
   for (let studentKey in studentsAtBerga) {
     if (typeof studentsAtBerga[studentKey] === "object") {
       const student = studentsAtBerga[studentKey];
+      studentSubjectsMap = student.subjects
+        .map((subject) => subject.name)
+        .join(", ");
+
+      studentNames.push(student.name);
+      studentSubjects.push(studentSubjectsMap);
+      studentHtml += `<p>Student ${nrOfStudents + 1}: ${student.name} </p>`;
+      studentHtml += `<p>Age: ${student.age}</p>`;
+      studentHtml += `<p>Gender: ${student.gender}`;
+      studentHtml += `<p>Subjects: ${studentSubjectsMap} </p>`;
+      studentHtml += "-------------------------------------------------------";
+
       console.log(`Student: ${student.name}`);
       console.log(`Age: ${student.age}`);
       console.log(`Gender: ${student.gender}`);
       console.log(
-        `Subjects: ${student.subjects
-          .map((subject) => subject.name)
-          .join(", ")}`
+        `Subjects: ${studentSubjectsMap}`
       );
       console.log("------------------------");
+
       nrOfStudents++;
     }
   }
+
+  studentsDiv.innerHTML = studentHtml;
+  nrOfStudentsDiv.innerHTML =
+    "There are: " +
+    nrOfStudents +
+    " at Bergaskolan. <br> -------------------------------------------------------";
+
   return "The number of students enlisted are: " + nrOfStudents;
 }
 
@@ -320,22 +352,22 @@ function displayAllSubjectsOfStudent(student) {
   let totalCoursePoints = 0;
   let subjectsInfo = [];
 
-  student.subjects.forEach(subject => {
+  student.subjects.forEach((subject) => {
     const gradeInfo = subject.grades[student.name];
     const coursePoints = subject.points;
-    
+
     let subjectInfo = {
       name: subject.name,
       points: coursePoints,
-      grade: gradeInfo ? gradeInfo.grade : 'Not graded',
-      teacher: subject.teachers.map(teacher => teacher.name).join(', ')
+      grade: gradeInfo ? gradeInfo.grade : "Not graded",
+      teacher: subject.teachers.map((teacher) => teacher.name).join(", "),
     };
 
     if (gradeInfo) {
       subjectInfo.gradedBy = gradeInfo.teacherId;
       subjectInfo.gradedOn = new Date(gradeInfo.date).toLocaleDateString();
       subjectInfo.weightedPoints = Grade[gradeInfo.grade] * coursePoints;
-      
+
       totalGradesWorth += subjectInfo.weightedPoints;
       totalCoursePoints += coursePoints;
     }
@@ -353,9 +385,10 @@ function displayAllSubjectsOfStudent(student) {
     console.log("------------------------");
   });
 
-  const weightedGPA = totalCoursePoints > 0 ? 
-    (totalGradesWorth / totalCoursePoints).toFixed(2) : 
-    'No grades yet';
+  const weightedGPA =
+    totalCoursePoints > 0
+      ? (totalGradesWorth / totalCoursePoints).toFixed(2)
+      : "No grades yet";
 
   console.log(`Total Course Points: ${totalCoursePoints}`);
   console.log(`Weighted GPA: ${weightedGPA}`);
@@ -365,7 +398,7 @@ function displayAllSubjectsOfStudent(student) {
     numberOfSubjects: student.subjects.length,
     subjects: subjectsInfo,
     totalCoursePoints,
-    weightedGPA
+    weightedGPA,
   };
 }
 
@@ -376,23 +409,31 @@ function displayAllStudentsEnlistedToSubject(subject) {
 
   console.log(`Subject: ${subject.name}`);
   console.log(`Course Points: ${subject.points}`);
-  console.log(`Teachers: ${subject.teachers.map(teacher => teacher.name).join(', ')}`);
+  console.log(
+    `Teachers: ${subject.teachers.map((teacher) => teacher.name).join(", ")}`
+  );
   console.log("------------------------");
   console.log("Students:");
 
   let studentsInfo = [];
   let gradeDistribution = {
-    A: 0, B: 0, C: 0, D: 0, E: 0, F: 0, 'Not graded': 0
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+    E: 0,
+    F: 0,
+    "Not graded": 0,
   };
 
-  subject.students.forEach(student => {
+  subject.students.forEach((student) => {
     const gradeInfo = subject.grades[student.name];
-    const grade = gradeInfo ? gradeInfo.grade : 'Not graded';
+    const grade = gradeInfo ? gradeInfo.grade : "Not graded";
     gradeDistribution[grade]++;
 
     let studentInfo = {
       name: student.name,
-      grade: grade
+      grade: grade,
     };
 
     if (gradeInfo) {
@@ -402,7 +443,7 @@ function displayAllStudentsEnlistedToSubject(subject) {
     }
 
     studentsInfo.push(studentInfo);
-    
+
     console.log(`Student: ${studentInfo.name}`);
     console.log(`Grade: ${studentInfo.grade}`);
     if (gradeInfo) {
@@ -425,28 +466,47 @@ function displayAllStudentsEnlistedToSubject(subject) {
   return {
     subjectName: subject.name,
     points: subject.points,
-    teachers: subject.teachers.map(teacher => teacher.name),
+    teachers: subject.teachers.map((teacher) => teacher.name),
     numberOfStudents: subject.students.length,
     students: studentsInfo,
-    gradeDistribution
+    gradeDistribution,
   };
 }
 
 function displayAllTeachers() {
+  let teacherNames = [];
+  let teacherSubjects = [];
   let nrOfTeachers = 0;
+  let teacherHtml = "";
+  let teacherSubjectsMap = [];
+
   for (let teacherKey in teachersAtBerga) {
     if (typeof teachersAtBerga[teacherKey] === "object") {
       const teacher = teachersAtBerga[teacherKey];
+      teacherSubjectsMap = teacher.subjects
+        .map((subject) => subject.name)
+        .join(", ");
+
+      teacherNames.push(teacher.name);
+      teacherSubjects.push(teacherSubjectsMap);
+      teacherHtml += `<p>Teacher ${nrOfTeachers + 1}: ${teacher.name} </p>`;
+      teacherHtml += `<p>Teaches in subjects: ${teacherSubjectsMap} </p>`;
+      teacherHtml += "-------------------------------------------------------";
+
       console.log(`Teacher: ${teacher.name}`);
-      console.log(
-        `Teaches in subjects: ${teacher.subjects
-          .map((subject) => subject.name)
-          .join(", ")}`
-      );
+      console.log(`Teaches in subjects: ${teacherSubjectsMap}`);
       console.log("------------------------");
+
       nrOfTeachers++;
     }
   }
+
+  teachersDiv.innerHTML = teacherHtml;
+  nrOfTeachersDiv.innerHTML =
+    "There are: " +
+    nrOfTeachers +
+    " teachers teaching at Bergaskolan. <br> -------------------------------------------------------";
+
   return nrOfTeachers;
 }
 
@@ -454,5 +514,12 @@ initialiseSchool();
 displayAllStudents();
 displayAllTeachers();
 
-teachersAtBerga.gradeStudent(teachersAtBerga.Daniel, studentsAtBerga.Johan, subjects.Mattematik_1c, 'A');
+teachersAtBerga.gradeStudent(
+  teachersAtBerga.Daniel,
+  studentsAtBerga.Johan,
+  subjects.Mattematik_1c,
+  "A"
+);
 console.log(subjects.getstudentGrade(subjects.Mattematik_1c, "Johan"));
+
+schoolNameDiv.innerHTML = `${bergaSkolan.name}`;
