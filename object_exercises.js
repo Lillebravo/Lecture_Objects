@@ -3,6 +3,7 @@ let teachersDiv = document.getElementById("teacherNames");
 let nrOfTeachersDiv = document.getElementById("nrOfTeachers");
 let studentsDiv = document.getElementById("studentNames");
 let nrOfStudentsDiv = document.getElementById("nrOfStudents");
+const relegateStudentButton = document.getElementById("relegateStudentButton");
 
 let bergaSkolan = {
   name: "Bergaskolan",

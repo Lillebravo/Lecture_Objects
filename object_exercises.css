@@ -12,3 +12,11 @@
   margin-left: 2vw;
   margin-top: 10vh;
 }
+
+.actionButtons {
+  display: inherit;
+}
+
+.popUpWindow {
+  visibility: hidden;
+}

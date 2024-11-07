@@ -14,14 +14,23 @@
   </head>
   <body>
     <div class="sideBarMenu">
-        <button class="addStudent">Add student</button>
-        <button class="addTeacher">Add teacher</button>
-        <button class="relegateStudent">Relegate student</button>
-        <button class="fireTeacher">Fire teacher</button>
+      <div class="actionButtons">
+        <button id="addStudentButton">Add student</button>
+        <button id="addTeacherButton">Add teacher</button>
+        <button id="relegateStudentButton">Relegate student</button>
+        <button id="fireTeacherButton">Fire teacher</button>
+      </div>
+
+      <div class="popUpWindow">
+        <select id="studentsToRelegate" placeholder="name of student">
+          <option value="" disabled selected>Select a student...</option>
+          <option value="Ruben">Ruben</option>
+          <option value="Johan">Johan</option>
+        </select>
+      </div>
     </div>
 
     <div class="mainContent">
-
       <div class="createSchoolMenu">
         <h1>System for schools</h1>
         <form>
@@ -39,7 +48,6 @@
         <p id="nrOfStudents">amount of students</p>
         <p id="studentNames">students</p>
       </div>
-
     </div>
 
     <script src="object_exercises.js"></script>
