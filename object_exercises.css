@@ -18,5 +18,6 @@
 }
 
 .popUpWindow {
-  visibility: hidden;
+  /* Later the select dropdown will be hidden and pop up when you need to relegate/fire someone */
+  /* visibility: hidden; */ 
 }
