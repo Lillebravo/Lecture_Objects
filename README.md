@@ -1,5 +1,5 @@
 # Lecture_Objects
-Lecture on js objects 2024-11-05
+Lecture on js objects 2024-11-05 and 2024-11-07
 
 <details open>
 <summary>Table of Contents</summary>
